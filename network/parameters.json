@@ -1,0 +1,26 @@
+{
+    "dataset" : "iris",
+    "layers":{
+        "0":{
+            "units":3
+        },
+        "1":{
+            "units": 5,
+            "activation": "sigmoid"
+        },
+        "2":{
+            "units": 4,
+            "activation": "sigmoid"
+        },
+        "3":{
+            "units": 4,
+            "activation": "sigmoid"
+        }
+    },
+    "loss" : "BCE",
+    "init_method" : "he",
+    "optimizer" : "SGD",
+    "batch_size" : 2,
+    "n_epochs" : 100,
+    "learning_rate" : 0.01
+}
