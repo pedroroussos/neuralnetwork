@@ -1,6 +1,7 @@
 import json
+import os
 
-class Parameters:
+class Hyperparameters:
 
     def __init__(self, file_path):
         with open(file_path) as f:
@@ -14,8 +15,4 @@ class Parameters:
         self.batch_size = param_dict['batch_size']
         self.n_epochs = param_dict['n_epochs']
         self.learning_rate = param_dict['learning_rate']
-
-
-h = Parameters('parameters.json')
-print(h.__dict__)
 
