@@ -1,10 +1,7 @@
 import numpy as np
-import json
+from nptyping import NDArray
 
 class Layer:
-
-    seed = 123
-
     """
     Represents a single layer of the network
     ...
@@ -12,69 +9,119 @@ class Layer:
     Attributes
     -------
     layer_units : int
-        number of "neurons" in the layer
+        number of "neurons" of the layer
+        
+    previous_units : int
+        number of "neurons" of the previous layer (or input, if layer is the first hidden)
 
     activation : str
         activation function of the layer (sigmoid, relu, linear, softmax, leaky_relu, tanh)
-
+        
+    init_method : str
+        method used to initialize weights and biases of the layer
+        
+    weights : NDArray
+        weights of the layer on matrix form
+        
+    bias : NDArray
+        biases of the layer on matrix form
+        
+    z : NDArray
+        pre-activations
+        
+    a : NDArray
+        outputs of the layer
+        
+    da : NDArray
+        derivative of the activation function with respect to the pre-activations
+        
+    w_m : NDArray
+        weights gradient (used for adam optimizing computing)
+   
+    b_m : NDArray
+        biases gradient (used for adam optimizing computing)   
+         
+    w_v : NDArray
+        weights pointwise squared gradient (used for adam optimizing computing)
+        
+    b_v : NDArray
+        biases pointwise squared gradient (used for adam optimizing computing)
+               
+    Methods
+    -------
+    init_parameters() -> None
+        initializes weights and biases of the layer
+    
+    forward_pass(input: NDArray) -> None
+        performs the forward pass (dot product of weights and inputs plus bias).
+        takes input data of shape [batch, input_units], stores output data [batch, layer_units]
+        
+    activate() -> None
+        pass layer's pre-activations through activation function, storing in self.a vector. Also computes
+        the derivative of the activation function with respect to the pre-activations, storing in self.da vector
+    
     """
 
-    def __init__(self, layer_units, previous_units, activation, init_method):
+    seed = 123
+
+    def __init__(self, layer_units: int, previous_units: int, activation: str, init_method: str):
+
         self.activation = activation
-
         self.layer_units = layer_units
+        self.previous_units = previous_units
+        self.init_method = init_method
 
-        self.weights = np.zeros((self.layer_units, previous_units))
+        self.weights = np.zeros((self.layer_units, self.previous_units))
         self.bias = np.zeros((self.layer_units, 1))
-        self.init_parameters(init_method)
 
-        self.weight_momentum = np.zeros_like(self.weights)
-        self.weight_velocity = np.zeros_like(self.weights)
-
-        self.bias_momentum = np.zeros_like(self.bias)
-        self.bias_velocity = np.zeros_like(self.bias)
+        self.init_parameters()
 
         self.z = np.zeros(self.layer_units)
         self.a = np.zeros(self.layer_units)
         self.da = np.zeros((self.layer_units, self.layer_units))
+
+        self.w_m = np.zeros_like(self.weights)
+        self.w_v = np.zeros_like(self.weights)
+
+        self.b_m = np.zeros_like(self.bias)
+        self.b_v = np.zeros_like(self.bias)
     
-    def init_parameters(self, init_method):
-        """
-        takes the init_method as parameter to initialize weights and biases of the layer 
-        """
+    def init_parameters(self) -> None:
+        """ initializes weights and biases of the layer """
 
         np.random.seed(Layer.seed)
         Layer.seed += 1
 
-        if init_method == 'xavier':
+        if self.init_method == 'xavier':
             self.weights = np.random.randn(*self.weights.shape) * np.sqrt(1/self.weights.shape[1])
             
-        elif init_method == 'he':
+        elif self.init_method == 'he':
             self.weights = np.random.randn(*self.weights.shape) * np.sqrt(2/self.weights.shape[1])
 
-        elif init_method == 'normal':
+        elif self.init_method == 'normal':
             self.weights = np.random.randn(*self.weights.shape)
             
-        elif init_method == 'uniform':
+        elif self.init_method == 'uniform':
             self.weights = np.random.uniform(-0.5, 0.5, size=self.weights.shape)
 
         else:
             raise ValueError("invalid init method")
 
 
-    def forward_pass(self, input):
+    def forward_pass(self, input: NDArray) -> None:
         """
         performs the forward pass (dot product of weights and inputs + bias).
         takes input data of shape [batch, input_units], stores output data [batch, layer_units]
-        
-        z[batch, layer_units] -> pre-activations
-        a[batch, layer_units] -> layer outputs
         """
         self.z = np.dot(self.weights, input) + self.bias
         self.activate()
 
-    def activate(self):
-        """ pass layer's pre-activations through activation funtion """
+    def activate(self) -> None:
+        """
+        pass layer's pre-activations through activation function, storing in self.a vector
+        also computes the derivative of the activation function with respect to the pre-activations,
+        storing in self.da vector
+        """
 
         if self.activation == 'sigmoid':
             self.a = 1/(1+np.exp(-self.z))
@@ -83,10 +130,10 @@ class Layer:
         elif self.activation == 'softmax':
             exps = np.exp(self.z)
             self.a = exps / np.sum(exps, axis=0)
+
             self.da = np.zeros((self.layer_units, self.layer_units))
 
             n = self.a.shape[0]
-
 
             for i in range(self.a.shape[1]):
                 tmp = np.tile(self.a[:,i].reshape(n,1), n)
