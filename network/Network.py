@@ -31,6 +31,9 @@ class Network:
     optimizer : string
         Optimizing method (sgd: stochastic gradient descent; adam: adaptive momentum).
 
+    current_epoch : integer
+        Stores the current epoch number the network is training at. It will be used in the adam optimizer
+
 
     Methods
     -------
@@ -83,8 +86,8 @@ class Network:
         self.dloss = np.array([])
         self.w_grad = {}
         self.b_grad = {}
-
         self.epoch_loss = []
+        self.current_epoch = 0
 
     def add_layer(self, units:int, activation:str) -> None:
         if len(self.layers) == 0:
@@ -157,14 +160,20 @@ class Network:
                 self.layers[i].b_m = beta1*self.layers[i].b_m + (1-beta1)*self.b_grad[i]
                 self.layers[i].b_v = beta2 * self.layers[i].b_v + (1 - beta2) * np.power(self.b_grad[i],2)
 
-                self.layers[i].weights -= self.learning_rate * (self.layers[i].w_m / (1 - beta1)) / (epsilon + np.sqrt(self.layers[i].w_v / (1 - beta2)))
-                self.layers[i].bias -= self.learning_rate * (self.layers[i].b_m / (1 - beta1)) / (epsilon + np.sqrt(self.layers[i].b_v / (1 - beta2)))
+                w_m_hat = self.layers[i].w_m / (1 - np.power(beta1, self.current_epoch+1))
+                w_v_hat = self.layers[i].w_v / (1 - np.power(beta2, self.current_epoch+1))
+                b_m_hat = self.layers[i].b_m / (1 - np.power(beta1, self.current_epoch+1))
+                b_v_hat = self.layers[i].b_v / (1 - np.power(beta2, self.current_epoch+1))
+
+                self.layers[i].weights -= self.learning_rate * w_m_hat / (epsilon + np.sqrt(w_v_hat))
+                self.layers[i].bias -= self.learning_rate * b_m_hat / (epsilon + np.sqrt(b_v_hat))
 
         else:
             raise ValueError('invalid optimizer')
 
     def train(self, x: NDArray, y: NDArray):
         for _ in range(self.n_epochs):
+            self.current_epoch += 1
             loss_epoch = []
             for k in range(0, len(x), self.batch_size):
                 self.forward_pass(x[:,k:k+self.batch_size])

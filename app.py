@@ -4,6 +4,7 @@ from network import *
 from sklearn.datasets import load_digits
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
 
 def main() -> None:
 
@@ -21,7 +22,7 @@ def main() -> None:
         loss_function = 'cce',
         init_method = 'xavier',
         batch_size = 1,
-        n_epochs = 100,
+        n_epochs = 1000,
         learning_rate = 0.01,
         optimizer = 'adam'
     )
@@ -37,6 +38,8 @@ def main() -> None:
     )
 
     nn.train(x_train.T, y_train.T)
+    plt.plot(nn.epoch_loss)
+    plt.show()
     print(nn.compute_accuracy(x_test, y_test))
 
 
