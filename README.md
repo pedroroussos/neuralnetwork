@@ -37,7 +37,7 @@ $$L_{MSE} =\frac{1}{N} \sum_{i=1}^N{(y_i - \hat{y}_i)}^2$$
       
 2. **'bce': binary cross-entropy**: can be used for binary classification problems. It is derived from the Bernoulli distribution. Expects an output vector of length 2 where the values are probabilities of belonging to the respective class.
  
-$_{BCE} = {-(y\log(\hat{y}) + (1 - y)\log(1 - \hat{y}))}$$ 
+$$L_{BCE} = {-(y\log(\hat{y}) + (1 - y)\log(1 - \hat{y}))}$$ 
  
 3. **'cce': categorical cross-entropy**: can be used for multiclass classification problems. It is derived from the categorical distribution. Expects an output vector of length *n_classes* where the values are probabilities of belonging to the respective class.  
  
