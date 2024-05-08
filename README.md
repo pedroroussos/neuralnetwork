@@ -14,9 +14,11 @@ The project consists of two main classes:
 ### Computing Process:    
 The neural network framework implemented in this project follows a standard process for training neural networks. Here's an overview of the computing process:    
     
-#### Initialization Initialize the neural network with specified hyperparameters such as the number of layers, activation functions, and initialization methods for weights and biases.    
+#### Initialization 
+Initialize the neural network with specified hyperparameters such as the number of layers, activation functions, and initialization methods for weights and biases.    
     
-#### Forward Pass Perform a forward pass through the network to compute the predicted output for a given input. This involves computing the weighted sum of inputs and applying activation functions at each layer.    
+#### Forward Pass 
+Perform a forward pass through the network to compute the predicted output for a given input. This involves computing the weighted sum of inputs and applying activation functions at each layer.    
     
 - compute layer's pre-activations:    
 $$z_i = \beta_i +  \sum_{j=1}^{D} w_{ij}x_j$$    
