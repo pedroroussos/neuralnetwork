@@ -123,12 +123,25 @@ Example usage:
 from network.Network import Network
     
  # Create a neural network object 
-network = Network(input_size=64, loss_function='cce', init_method='xavier', batch_size=2, n_epochs=100, learning_rate=0.01, optimizer='adam')    
+network = Network(input_size=64, 
+                  loss_function='cce', 
+                  init_method='xavier', 
+                  batch_size=2, 
+                  n_epochs=1000, 
+                  learning_rate=0.01, 
+                  optimizer='adam')    
+ 
  # Add layers to the network 
-network.add_layer(units=128, activation='relu') network.add_layer(units=64, activation='sigmoid') network.add_layer(units=10, activation='softmax')    
- # Train the network network.train(x_train, y_train)    
+network.add_layer(units=128, activation='relu') 
+network.add_layer(units=64, activation='sigmoid') 
+network.add_layer(units=10, activation='softmax')  
+
+ # Train the network 
+network.train(x_train, y_train) 
+
  # Evaluate the trained model 
- accuracy = network.compute_accuracy(x_test, y_test) print("Accuracy:", accuracy)   
+accuracy = network.compute_accuracy(x_test, y_test) 
+print("Accuracy:", accuracy)   
 ```    
  ## Contributing 
  Contributions to this project are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.    
